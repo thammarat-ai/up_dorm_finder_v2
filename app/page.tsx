@@ -1,65 +1,196 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React, { Suspense, useMemo } from 'react';
+import { MapPin, ShieldCheck, Bus, Zap, Dog, ChevronRight, Sparkles } from 'lucide-react';
+import Link from 'next/link';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { MOCK_DORMS } from '@/lib/mockDorms';
+import { getDistanceFromGate } from '@/lib/utils';
+import DormTag from '@/components/DormTag';
+import SearchSidebar from '@/components/SearchSidebar';
+import { TagKey } from '@/lib/tags';
+
+function DormDirectory() {
+  const searchParams = useSearchParams();
+  const activeTag = searchParams.get('tag') as TagKey | null;
+  const minPrice = parseInt(searchParams.get('minPrice') || '0');
+  const maxPrice = parseInt(searchParams.get('maxPrice') || '100000');
+  const propertyType = searchParams.get('type');
+
+  const filteredDorms = useMemo(() => {
+    return MOCK_DORMS.filter((dorm) => {
+      // Text search
+      const q = searchParams.get('q')?.toLowerCase();
+      if (q && !dorm.name.toLowerCase().includes(q) && !dorm.zone.toLowerCase().includes(q)) return false;
+
+      // Price range
+      if (dorm.monthlyPrice < minPrice || dorm.monthlyPrice > maxPrice) return false;
+
+      // Property type (Mock filtering based on names for demo if not in schema)
+      if (propertyType) {
+        if (propertyType === 'FEMALE' && !dorm.name.includes('หญิง')) return false;
+        // ... add more type logic as needed
+      }
+
+      // Smart Tag Filtering
+      if (activeTag) {
+        switch (activeTag) {
+          case 'GOV_ELECTRIC':
+            if (dorm.electricityType !== 'GOVERNMENT_RATE') return false;
+            break;
+          case 'PURPLE_BUS_NEAR':
+            if ((dorm.purpleBusDist || 1000) > 300) return false;
+            break;
+          case 'PET_FRIENDLY':
+            if (!dorm.rules?.pets) return false;
+            break;
+          case 'WALK_TO_UP':
+            if (dorm.zone !== 'FRONT_UP_LEFT' && dorm.zone !== 'FRONT_UP_RIGHT') return false;
+            break;
+          case 'HIGH_SPEED_WIFI':
+            if ((dorm.internetScore || 0) < 4.5) return false;
+            break;
+          case 'KIND_OWNER':
+            if ((dorm.ownerScore || 0) < 4.5) return false;
+            break;
+          case 'QUIET_ZONE':
+            if ((dorm.noiseScore || 0) < 4.5) return false;
+            break;
+        }
+      }
+
+      return true;
+    });
+  }, [searchParams, activeTag, minPrice, maxPrice, propertyType]);
+
+  const calculateMatchScore = (dorm: typeof MOCK_DORMS[0]) => {
+    const base = 70;
+    const internetBonus = (dorm.internetScore || 0) * 4;
+    const verifiedBonus = dorm.isVerified ? 10 : 0;
+    const busBonus = (dorm.purpleBusDist || 1000) < 300 ? 5 : 0;
+    return Math.min(99, Math.round(base + internetBonus + verifiedBonus + busBonus));
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="bg-gray-50 min-h-screen">
+      {/* Smart Tags Row */}
+      <div className="sticky top-[132px] z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 overflow-x-auto no-scrollbar py-4 px-6">
+        <div className="max-w-7xl mx-auto flex gap-3 whitespace-nowrap">
+          <DormTag tagKey="PURPLE_BUS_NEAR" clickable />
+          <DormTag tagKey="GOV_ELECTRIC" clickable />
+          <DormTag tagKey="PET_FRIENDLY" clickable />
+          <DormTag tagKey="WALK_TO_UP" clickable />
+          <DormTag tagKey="HIGH_SPEED_WIFI" clickable />
+          <DormTag tagKey="KIND_OWNER" clickable />
+          <DormTag tagKey="QUIET_ZONE" clickable />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
+
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 py-6 px-4 lg:px-6">
+        {/* Desktop Sidebar */}
+        <SearchSidebar />
+
+        <main className="flex-1 pb-32">
+          <div className="flex justify-between items-center mb-6 px-2">
+            <h2 className="text-xl font-black text-up-purple uppercase tracking-tight">
+              {searchParams.toString() ? 'ผลการกรอง' : 'รายชื่อหอพักแนะนำ'}
+            </h2>
+            <span className="text-xs font-bold text-gray-400 bg-white border border-gray-100 shadow-sm px-4 py-1.5 rounded-full">
+              {filteredDorms.length} แห่ง
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
+            {filteredDorms.map((dorm) => {
+              const matchScore = calculateMatchScore(dorm);
+              const distanceText = getDistanceFromGate(dorm.lat, dorm.lng);
+              return (
+                <Link key={dorm.id} href={`/dorm/${dorm.id}`}>
+                  <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full group">
+                    {/* Image */}
+                    <div className="relative h-56 overflow-hidden">
+                      <img 
+                        src={`https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&q=80&w=600`}
+                        alt={dorm.name} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      {dorm.isVerified && (
+                        <div className="absolute top-5 left-5 bg-up-gold text-up-purple p-2 rounded-2xl shadow-lg border border-white/20">
+                          <ShieldCheck size={20} strokeWidth={3} />
+                        </div>
+                      )}
+                      <div className="absolute bottom-5 right-5 bg-white/90 backdrop-blur-md px-4 py-2 rounded-[1.25rem] flex items-center gap-2 shadow-lg">
+                        <Sparkles size={14} className="text-up-gold animate-pulse" />
+                        <span className="text-xs font-black text-up-purple uppercase tracking-tight">
+                          {matchScore}% Match
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-7 flex-1 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+                          <MapPin size={12} className="text-up-gold" />
+                          {dorm.zone.replace(/_/g, ' ')} • <span className="text-up-purple font-black">{distanceText}</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-800 mb-4 leading-tight group-hover:text-up-purple transition-colors">{dorm.name}</h3>
+                        
+                        <div className="flex flex-wrap gap-2">
+                          {dorm.electricityType === 'GOVERNMENT_RATE' && (
+                            <div className="flex items-center gap-1.5 text-[10px] font-black text-green-600 bg-green-50 px-3 py-1.5 rounded-xl border border-green-100">
+                              <Zap size={12} /> ค่าไฟหลวง
+                            </div>
+                          )}
+                          {(dorm.purpleBusDist || 1000) < 300 && (
+                            <div className="flex items-center gap-1.5 text-[10px] font-black text-up-purple bg-up-purple/5 px-3 py-1.5 rounded-xl border border-up-purple/10">
+                              <Bus size={12} /> ใกล้รถม่วง
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mt-8 flex items-center justify-between">
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-2xl font-black text-up-purple">฿{dorm.monthlyPrice}</span>
+                          <span className="text-xs text-gray-400 font-bold uppercase">/เดือน</span>
+                        </div>
+                        <div className="bg-gray-50 text-up-purple p-3 rounded-2xl group-hover:bg-up-purple group-hover:text-white transition-all shadow-sm">
+                          <ChevronRight size={20} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+
+          {filteredDorms.length === 0 && (
+            <div className="py-20 text-center bg-white rounded-[3rem] border border-dashed border-gray-200">
+              <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                 <Sparkles size={32} className="text-gray-200" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">ไม่พบข้อมูลหอพักที่ตรงตามเงื่อนไข</h3>
+              <p className="text-sm text-gray-500 mb-8">ลองปรับเปลี่ยนตัวกรอง หรือค้นหาใหม่อีกครั้ง</p>
+              <button 
+                onClick={() => router.push(pathname)}
+                className="bg-up-purple text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-up-purple/20 transition-transform active:scale-95"
+              >
+                ล้างตัวกรองทั้งหมด
+              </button>
+            </div>
+          )}
+        </main>
+      </div>
     </div>
+  );
+}
+
+export default function LandingPage() {
+  return (
+    <Suspense fallback={<div className="p-20 text-center text-up-purple font-black animate-pulse uppercase tracking-widest text-sm">กำลังโหลดข้อมูลหอพัก...</div>}>
+      <DormDirectory />
+    </Suspense>
   );
 }

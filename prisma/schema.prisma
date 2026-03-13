@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Zone {
+  FRONT_UP_LEFT
+  FRONT_UP_RIGHT
+  MAE_KA
+  IN_TOWN
+}
+
+enum BillingType {
+  FIXED
+  PER_UNIT
+  GOVERNMENT_RATE
+}
+
+model Dormitory {
+  id                String   @id @default(cuid())
+  name              String
+  zone              Zone
+  lat               Float
+  lng               Float
+  monthlyPrice      Float    @map("monthly_price")
+  deposit           Float
+  advancedPayment   Float    @map("advanced_payment")
+
+  // Utility Billing
+  waterBillingType  BillingType @default(FIXED) @map("water_billing_type")
+  waterRate         Float?      @map("water_rate")
+  electricityType   BillingType @default(GOVERNMENT_RATE) @map("electricity_billing_type")
+  electricityRate   Float?      @map("electricity_rate")
+  commonFee         Float?      @map("common_fee")
+
+  // Amenities & Features (using JSONB for flexibility)
+  inRoom            Json?    @map("in_room") // { aircon: boolean, bedSize: string, desk: boolean, etc. }
+  publicFacilities  Json?    @map("public_facilities") // { pool: boolean, gym: boolean, laundry: boolean, etc. }
+  rules             Json?    // { pets: boolean, smoking: boolean, curfew: string, etc. }
+  
+  // Security Features (String array)
+  securityFeatures  String[] @map("security_features")
+
+  // Vibe & Trust
+  isVerified        Boolean  @default(false) @map("is_verified")
+  internetScore     Float?   @map("internet_score")
+  noiseScore        Float?   @map("noise_score")
+  ownerScore        Float?   @map("owner_score")
+  
+  // Spatial context
+  purpleBusDist     Float?   @map("purple_bus_dist") // distance in meters
+
+  // Metadata
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@index([zone])
+  @@index([monthlyPrice])
+  @@index([isVerified])
+  @@map("dormitories")
+}
+
+model Review {
+  id          String    @id @default(cuid())
+  dormId      String    @map("dorm_id")
+  dorm        Dormitory @relation(fields: [dormId], references: [id])
+  rating      Int
+  comment     String?
+  internet    Float
+  noise       Float
+  owner       Float
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("reviews")
+}

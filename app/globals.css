@@ -10,6 +10,27 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-up-purple: #6D28D9;
+  --color-up-gold: #F59E0B;
+  --color-up-purple-light: #8B5CF6;
+  --color-up-gold-light: #FBBF24;
+}
+
+@layer components {
+  .slide-over-enter {
+    transform: translateX(100%);
+  }
+  .slide-over-enter-active {
+    transform: translateX(0);
+    transition: transform 300ms ease-in-out;
+  }
+  .slide-over-exit {
+    transform: translateX(0);
+  }
+  .slide-over-exit-active {
+    transform: translateX(100%);
+    transition: transform 300ms ease-in-out;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
