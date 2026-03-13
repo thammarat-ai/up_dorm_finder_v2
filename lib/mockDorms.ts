@@ -214,8 +214,8 @@ export const MOCK_DORMS = [
       studyRoom: true
     },
     rules: {
-      pets: false,
-      smoking: false,
+      pets: true,
+      smoking: true,
       curfew: 'None'
     },
     securityFeatures: ['CCTV', 'Keycard'],

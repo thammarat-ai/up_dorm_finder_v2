@@ -16,18 +16,28 @@ export default function DormTag({ tagKey, clickable = false }: DormTagProps) {
 
   if (!tag) return null;
 
-  const isActive = searchParams.get('tag') === tagKey;
+  const currentTags = searchParams.get('tag')?.split(',').filter(Boolean) || [];
+  const isActive = currentTags.includes(tagKey);
 
   const handleClick = () => {
     if (!clickable) return;
     
     const params = new URLSearchParams(searchParams.toString());
+    let newTags = [...currentTags];
+
     if (isActive) {
-      params.delete('tag');
+      newTags = newTags.filter((t) => t !== tagKey);
     } else {
-      params.set('tag', tagKey);
+      newTags.push(tagKey);
     }
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+
+    if (newTags.length > 0) {
+      params.set('tag', newTags.join(','));
+    } else {
+      params.delete('tag');
+    }
+
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const Icon = tag.icon;
