@@ -13,8 +13,6 @@ import { TagKey } from '@/lib/tags';
 function DormDirectory() {
   const router = useRouter()
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
   const activeTag = searchParams.get('tag') as TagKey | null;
   const minPrice = parseInt(searchParams.get('minPrice') || '0');
   const maxPrice = parseInt(searchParams.get('maxPrice') || '100000');
@@ -74,7 +72,9 @@ function DormDirectory() {
     return Math.min(99, Math.round(base + internetBonus + verifiedBonus + busBonus));
   };
 
+
   return (
+
     <div className="bg-gray-50 min-h-screen">
       {/* Smart Tags Row */}
       <div className="sticky top-[132px] z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 overflow-x-auto no-scrollbar py-4 px-6">
@@ -107,6 +107,8 @@ function DormDirectory() {
             {filteredDorms.map((dorm) => {
               const matchScore = calculateMatchScore(dorm);
               const distanceText = getDistanceFromGate(dorm.lat, dorm.lng);
+              const formattedPrice = dorm?.monthlyPrice?.toLocaleString() || '0';
+
               return (
                 <Link key={dorm.id} href={`/dorm/${dorm.id}`}>
                   <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full group">
@@ -155,7 +157,7 @@ function DormDirectory() {
 
                       <div className="mt-8 flex items-center justify-between">
                         <div className="flex items-baseline gap-1">
-                          <span className="text-2xl font-black text-up-purple">฿{dorm.monthlyPrice}</span>
+                          <span className="text-2xl font-black text-up-purple">฿{formattedPrice}</span>
                           <span className="text-xs text-gray-400 font-bold uppercase">/เดือน</span>
                         </div>
                         <div className="bg-gray-50 text-up-purple p-3 rounded-2xl group-hover:bg-up-purple group-hover:text-white transition-all shadow-sm">

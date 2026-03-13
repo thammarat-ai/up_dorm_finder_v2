@@ -15,6 +15,9 @@ export default async function DormDetailsPage({ params }: PageProps) {
   const { id } = await params;
   // Use MOCK_DORMS and string comparison for IDs
   const dorm = MOCK_DORMS.find((d) => d.id === id);
+  const formattedPrice = dorm?.monthlyPrice?.toLocaleString() || '0';
+  const formattedDeposit = dorm?.deposit?.toLocaleString() || '0';
+
 
   if (!dorm) {
     notFound();
@@ -70,9 +73,9 @@ export default async function DormDetailsPage({ params }: PageProps) {
             <div className="bg-white/10 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/20 text-center min-w-[220px]">
               <p className="text-up-gold text-[10px] font-black uppercase tracking-widest mb-1">Monthly Rent</p>
               <div className="flex items-center justify-center gap-1">
-                <span className="text-4xl font-black text-white">฿{dorm.monthlyPrice}</span>
+                <span className="text-4xl font-black text-white">฿{formattedPrice}</span>
               </div>
-              <p className="text-white/60 text-[10px] font-bold mt-2 uppercase">Deposit: ฿{dorm.deposit}</p>
+              <p className="text-white/60 text-[10px] font-bold mt-2 uppercase">Deposit: ฿{formattedDeposit}</p>
             </div>
           </div>
         </div>
