@@ -1,5 +1,3 @@
-import { Zone, BillingType } from '@prisma/client';
-
 export const MOCK_DORMS = [
   {
     id: 'up-dorm-001',
