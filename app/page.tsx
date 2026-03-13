@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Suspense, useMemo } from 'react';
-import { MapPin, ShieldCheck, Bus, Zap, ChevronRight, Sparkles } from 'lucide-react';
+import { MapPin, ShieldCheck, Bus, Zap, ChevronRight, BadgeAlert } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { MOCK_DORMS } from '@/lib/mockDorms';
@@ -121,7 +121,7 @@ function DormDirectory() {
                         </div>
                       )}
                       <div className="absolute bottom-5 right-5 bg-white/90 backdrop-blur-md px-4 py-2 rounded-[1.25rem] flex items-center gap-2 shadow-lg">
-                        <Sparkles size={14} className="text-up-gold animate-pulse" />
+                        <BadgeAlert size={15} className="text-up-gold animate-pulse" />
                         <span className="text-xs font-black text-up-purple uppercase tracking-tight">
                           {matchScore}% Match
                         </span>
@@ -170,13 +170,13 @@ function DormDirectory() {
           {filteredDorms.length === 0 && (
             <div className="py-20 text-center bg-white rounded-[3rem] border border-dashed border-gray-200">
               <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                 <Sparkles size={32} className="text-gray-200" />
+                 <BadgeAlert size={40} className="text-gray-200" />
               </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">ไม่พบข้อมูลหอพักที่ตรงตามเงื่อนไข</h3>
               <p className="text-sm text-gray-500 mb-8">ลองปรับเปลี่ยนตัวกรอง หรือค้นหาใหม่อีกครั้ง</p>
               <button 
                 onClick={() => {
-                  router.push("/?q=");
+                  router.push("/");
                 }
                 }
                 className="bg-up-purple text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-up-purple/20 transition-transform active:scale-95"

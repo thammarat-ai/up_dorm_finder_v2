@@ -3,7 +3,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Home, Map as MapIcon, Heart, User, Search, SlidersHorizontal, LayoutGrid } from 'lucide-react';
+import { Home, Map as MapIcon, Heart, User, Search, SlidersHorizontal, LayoutGrid,X } from 'lucide-react';
 import { useState, Suspense, useEffect } from 'react';
 import SearchSidebar from '@/components/SearchSidebar';
 import Link from 'next/link';
@@ -91,7 +91,7 @@ function Header() {
             <div className="p-6 border-b border-gray-100 flex justify-between items-center">
               <h2 className="text-xl font-black text-up-purple">ตัวกรอง</h2>
               <button onClick={() => setIsFilterOpen(false)} className="p-2 bg-gray-100 rounded-full">
-                <Search size={20} className="rotate-45" /> {/* Close icon lookalike or use X */}
+                <X size={20} className="text-red-600" /> {/* Close icon lookalike or use X */}
               </button>
             </div>
             <div className="max-h-[70vh] overflow-y-auto">
