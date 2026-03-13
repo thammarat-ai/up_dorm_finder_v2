@@ -4,11 +4,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Home, Map as MapIcon, Heart, User, Search, SlidersHorizontal, LayoutGrid } from 'lucide-react';
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import SearchSidebar from '@/components/SearchSidebar';
 import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -19,11 +18,22 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+
 function Header() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const [searchValue, setSearchValue] = useState(searchParams.get('q') || '');
+
+
+  useEffect(() => {
+    const urlQuery = searchParams.get('q') || '';
+
+    if (searchValue !== urlQuery) {
+      setSearchValue(urlQuery);
+    }
+  }, [searchParams]);
 
   const handleSearch = (term: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -52,15 +62,15 @@ function Header() {
           <div className="flex gap-2">
             <div className="flex-1 bg-gray-100 rounded-2xl flex items-center px-4 py-3 text-gray-400">
               <Search size={18} className="mr-2 text-up-purple" />
-              <input 
-                type="text" 
-                placeholder="ค้นหาชื่อหอพัก หรือโซน..." 
+              <input
+                type="text"
+                placeholder="ค้นหาชื่อหอพัก หรือโซน..."
                 className="bg-transparent border-none outline-none text-gray-700 w-full text-sm font-medium"
-                defaultValue={searchParams.get('q') || ''}
+                value={searchValue}
                 onChange={(e) => handleSearch(e.target.value)}
               />
             </div>
-            <button 
+            <button
               onClick={() => setIsFilterOpen(true)}
               className="lg:hidden bg-up-purple text-white p-3 rounded-2xl shadow-lg shadow-up-purple/20 transition-transform active:scale-90 relative"
             >
@@ -79,10 +89,10 @@ function Header() {
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsFilterOpen(false)} />
           <div className="absolute bottom-0 inset-x-0 bg-white rounded-t-[3rem] shadow-2xl overflow-hidden transition-transform animate-in slide-in-from-bottom duration-300">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-               <h2 className="text-xl font-black text-up-purple">ตัวกรอง</h2>
-               <button onClick={() => setIsFilterOpen(false)} className="p-2 bg-gray-100 rounded-full">
-                 <Search size={20} className="rotate-45" /> {/* Close icon lookalike or use X */}
-               </button>
+              <h2 className="text-xl font-black text-up-purple">ตัวกรอง</h2>
+              <button onClick={() => setIsFilterOpen(false)} className="p-2 bg-gray-100 rounded-full">
+                <Search size={20} className="rotate-45" /> {/* Close icon lookalike or use X */}
+              </button>
             </div>
             <div className="max-h-[70vh] overflow-y-auto">
               <SearchSidebar isMobile onClose={() => setIsFilterOpen(false)} />

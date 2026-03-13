@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Suspense, useMemo } from 'react';
-import { MapPin, ShieldCheck, Bus, Zap, Dog, ChevronRight, Sparkles } from 'lucide-react';
+import { MapPin, ShieldCheck, Bus, Zap, ChevronRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { MOCK_DORMS } from '@/lib/mockDorms';
@@ -11,6 +11,7 @@ import SearchSidebar from '@/components/SearchSidebar';
 import { TagKey } from '@/lib/tags';
 
 function DormDirectory() {
+  const router = useRouter()
   const searchParams = useSearchParams();
   const activeTag = searchParams.get('tag') as TagKey | null;
   const minPrice = parseInt(searchParams.get('minPrice') || '0');
@@ -174,7 +175,10 @@ function DormDirectory() {
               <h3 className="text-xl font-bold text-gray-800 mb-2">ไม่พบข้อมูลหอพักที่ตรงตามเงื่อนไข</h3>
               <p className="text-sm text-gray-500 mb-8">ลองปรับเปลี่ยนตัวกรอง หรือค้นหาใหม่อีกครั้ง</p>
               <button 
-                onClick={() => router.push(pathname)}
+                onClick={() => {
+                  router.push("/?q=");
+                }
+                }
                 className="bg-up-purple text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-up-purple/20 transition-transform active:scale-95"
               >
                 ล้างตัวกรองทั้งหมด
