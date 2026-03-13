@@ -191,7 +191,7 @@ export default function SearchSidebar({ isMobile, onClose }: SidebarProps) {
   if (isMobile) return SidebarContent;
 
   return (
-    <aside className="w-64 shrink-0 sticky top-32 h-fit hidden lg:block">
+    <aside className="w-64 shrink-0 sticky top-50 h-fit hidden lg:block">
       <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-black text-up-purple tracking-tight">ตัวกรอง</h2>
