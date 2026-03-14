@@ -15,6 +15,9 @@ export default async function DormDetailsPage({ params }: PageProps) {
   const { id } = await params;
   // Use MOCK_DORMS and string comparison for IDs
   const dorm = MOCK_DORMS.find((d) => d.id === id);
+  const formattedPrice = dorm?.monthlyPrice?.toLocaleString() || '0';
+  const formattedDeposit = dorm?.deposit?.toLocaleString() || '0';
+
 
   if (!dorm) {
     notFound();
@@ -70,9 +73,9 @@ export default async function DormDetailsPage({ params }: PageProps) {
             <div className="bg-white/10 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/20 text-center min-w-[220px]">
               <p className="text-up-gold text-[10px] font-black uppercase tracking-widest mb-1">Monthly Rent</p>
               <div className="flex items-center justify-center gap-1">
-                <span className="text-4xl font-black text-white">฿{dorm.monthlyPrice}</span>
+                <span className="text-4xl font-black text-white">฿{formattedPrice}</span>
               </div>
-              <p className="text-white/60 text-[10px] font-bold mt-2 uppercase">Deposit: ฿{dorm.deposit}</p>
+              <p className="text-white/60 text-[10px] font-bold mt-2 uppercase">Deposit: ฿{formattedDeposit}</p>
             </div>
           </div>
         </div>
@@ -118,6 +121,7 @@ export default async function DormDetailsPage({ params }: PageProps) {
                 </div>
               </div>
               <div>
+                
                 <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Security & Facilities</h3>
                 <div className="flex flex-wrap gap-2">
                   {dorm.securityFeatures.map((feature, i) => (
@@ -128,20 +132,24 @@ export default async function DormDetailsPage({ params }: PageProps) {
                 </div>
               </div>
             </div>
-
+            
+            {/* Map */}
+            <div className="relative z-0">
             <h3 id="map-section" className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
               <MapIcon size={24} className="text-up-purple" />
               Location on Map
             </h3>
             <MapWrapper location={{ lat: dorm.lat, lng: dorm.lng }} name={dorm.name} />
           </div>
+          </div>
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
-          <div className="bg-white p-8 rounded-[3rem] shadow-xl border-2 border-up-gold/10 sticky top-32">
+        <aside className="space-y-6 h-fit sticky top-32">
+          {/* Contact Owner */}
+          <div className="bg-white p-8 rounded-[3rem] shadow-xl border-2 border-up-gold/10">
             <h3 className="text-2xl font-black text-up-purple mb-8">Contact Owner</h3>
-            
+
             <div className="space-y-4 mb-10">
               <div className="flex items-center gap-4 p-5 bg-up-purple/5 rounded-[2rem] border border-up-purple/10">
                 <div className="bg-up-purple p-4 rounded-2xl text-white shadow-lg shadow-up-purple/20">
@@ -157,12 +165,13 @@ export default async function DormDetailsPage({ params }: PageProps) {
             <button className="w-full bg-up-purple hover:bg-up-purple-light text-white font-black py-5 rounded-[2rem] transition-all shadow-xl shadow-up-purple/20 mb-4 text-sm uppercase tracking-widest">
               Message via Line
             </button>
-            
+
             <a href="#map-section" className="w-full bg-white border-2 border-up-gold text-up-purple hover:bg-up-gold/10 font-black py-5 rounded-[2rem] transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-widest text-center">
               View Directions
             </a>
           </div>
 
+          {/* UP Student Verified */}
           <div className="bg-gradient-to-br from-up-purple to-up-purple-light p-10 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden group">
             <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-all"></div>
             <h4 className="text-xl font-black mb-3">UP Student Verified</h4>
@@ -170,7 +179,8 @@ export default async function DormDetailsPage({ params }: PageProps) {
               This property has been inspected for fair electricity rates and safety standards.
             </p>
           </div>
-        </div>
+        </aside>
+
       </div>
     </main>
   );

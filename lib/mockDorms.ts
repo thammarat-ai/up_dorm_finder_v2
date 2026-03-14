@@ -187,5 +187,43 @@ export const MOCK_DORMS = [
     noiseScore: 4.0,
     ownerScore: 4.6,
     purpleBusDist: 300,
+  },
+{
+    id: 'up-dorm-006',
+    name: 'KM2',
+    zone: 'FRONT_UP_RIGHT' as const,
+    lat: 19.0275,
+    lng: 99.8988,
+    monthlyPrice: 12000,
+    deposit: 3200,
+    advancedPayment: 3200,
+    waterBillingType: 'FIXED' as const,
+    waterRate: 150,
+    electricityType: 'PER_UNIT' as const,
+    electricityRate: 7,
+    commonFee: 100,
+    inRoom: {
+      aircon: true,
+      bedSize: 'Queen',
+      desk: true,
+      wifiRouter: true
+    },
+    publicFacilities: {
+      laundry: true,
+      parking: true,
+      studyRoom: true
+    },
+    rules: {
+      pets: true,
+      smoking: true,
+      curfew: 'None'
+    },
+    securityFeatures: ['CCTV', 'Keycard'],
+    isVerified: true,
+    internetScore: 4.8,
+    noiseScore: 4.0,
+    ownerScore: 4.6,
+    purpleBusDist: 300,
   }
+  
 ];
